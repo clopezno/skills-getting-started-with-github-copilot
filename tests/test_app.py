@@ -37,3 +37,9 @@ def test_signup_and_remove_participant():
     remove2 = client.delete(f"/activities/{activity_name}/signup?email={email}")
     assert remove2.status_code == 404
     assert "Participant not found" in remove2.json()["detail"]
+
+def test_delete_participant_from_nonexistent_activity():
+    # Attempt to delete from an activity that doesn't exist
+    response = client.delete("/activities/does-not-exist/signup?email=test@mergington.edu")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Activity not found"
