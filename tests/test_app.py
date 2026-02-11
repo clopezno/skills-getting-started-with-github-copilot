@@ -1,19 +1,8 @@
 import pytest
-from copy import deepcopy
 from fastapi.testclient import TestClient
 from src.app import app
-import src.app
 
 client = TestClient(app)
-
-# Store initial activities state for test isolation
-INITIAL_ACTIVITIES = deepcopy(src.app.activities)
-
-@pytest.fixture(autouse=True)
-def reset_activities():
-    """Reset activities state before each test to ensure test isolation"""
-    src.app.activities.clear()
-    src.app.activities.update(deepcopy(INITIAL_ACTIVITIES))
 
 def test_get_activities():
     response = client.get("/activities")
