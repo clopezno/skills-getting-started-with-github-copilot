@@ -20,12 +20,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
-        // Crear la lista de participantes como elementos <li>
+        // Crear la lista de participantes como elementos <li> con icono de eliminar
         let participantsHTML = "";
         if (details.participants.length > 0) {
           participantsHTML = `
             <ul class="participants-list">
-              ${details.participants.map(email => `<li>${email}</li>`).join("")}
+              ${details.participants.map(email => `
+                <li data-email="${email}">
+                  <span class="participant-email">${email}</span>
+                  <span class="delete-participant" title="Remove participant">&times;</span>
+                </li>
+              `).join("")}
             </ul>
           `;
         } else {
@@ -42,6 +47,31 @@ document.addEventListener("DOMContentLoaded", () => {
             ${participantsHTML}
           </div>
         `;
+
+        // Añadir manejador de eventos para eliminar participante
+        const participantsList = activityCard.querySelector('.participants-list');
+        if (participantsList) {
+          participantsList.querySelectorAll('.delete-participant').forEach((icon) => {
+            icon.addEventListener('click', async (e) => {
+              const li = icon.closest('li');
+              const emailToRemove = li.getAttribute('data-email');
+              try {
+                const response = await fetch(`/activities/${encodeURIComponent(name)}/signup?email=${encodeURIComponent(emailToRemove)}`, {
+                  method: 'DELETE',
+                });
+                if (response.ok) {
+                  // Recargar actividades para reflejar el cambio
+                  fetchActivities();
+                } else {
+                  const result = await response.json();
+                  alert(result.detail || 'Could not remove participant.');
+                }
+              } catch (error) {
+                alert('Error removing participant.');
+              }
+            });
+          });
+        }
 
         activitiesList.appendChild(activityCard);
 
@@ -78,6 +108,8 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+        // Actualizar la lista de actividades y participantes
+        fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
