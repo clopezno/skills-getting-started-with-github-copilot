@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
-        // Crear la lista de participantes como elementos <li> con icono de eliminar
+        // Create the participants list as <li> elements with delete icon
         let participantsHTML = "";
         if (details.participants.length > 0) {
           participantsHTML = `
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `;
 
-        // Añadir manejador de eventos para eliminar participante
+        // Add event handler to delete participant
         const participantsList = activityCard.querySelector('.participants-list');
         if (participantsList) {
           participantsList.querySelectorAll('.delete-participant').forEach((icon) => {
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
                   method: 'DELETE',
                 });
                 if (response.ok) {
-                  // Recargar actividades para reflejar el cambio
+                  // Reload activities to reflect the change
                   fetchActivities();
                 } else {
                   const result = await response.json();
@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
-        // Actualizar la lista de actividades y participantes
+        // Update the activities and participants list
         fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
